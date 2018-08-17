@@ -75,6 +75,7 @@
 (require 'javascript-init)
 (require 'c-init)
 (require 'ansible-init)
+(require 'rust-init)
 
 
 ;;; text-mode
