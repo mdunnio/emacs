@@ -34,6 +34,7 @@
 (global-set-key (kbd "C-c r") 'recompile)     ; recompile
 (global-set-key (kbd "C-c a") 'align-regexp)  ; align
 (global-set-key (kbd "C-c g") 'rgrep)         ; grep
+(global-linum-mode 1)                         ; linum-mode
 
 
 ;;; ediff

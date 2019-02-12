@@ -33,5 +33,11 @@
  haskell-interactive-mode-eval-mode 'haskell-mode
  haskell-interactive-popup-errors nil)
 
+(flycheck-add-next-checker 'intero '(warning . haskell-hlint))
+
+(autoload 'dash-at-point "dash-at-point" "Search the word at point with Dash." t nil)
+(global-set-key (kbd "C-c d") 'dash-at-point)
+(global-set-key (kbd "C-c e") 'dash-at-point-with-docset)
+
 (message "Loading haskell-init...done")
 (provide 'haskell-intero-init)
