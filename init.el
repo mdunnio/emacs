@@ -1,6 +1,12 @@
 ;; ~/.emacs.d/init.el (~/.emacs)
-
 ;;;; General ;;;;
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (add-to-list 'load-path "~/.emacs.d/elisp")   ; set default emacs load path
 (setq auto-save-default nil)                  ; disable auto-save
 (setq make-backup-files nil)                  ; clean-up backup files
@@ -13,7 +19,7 @@
  split-width-threshold 181                    ; min width to split window horizontially
  split-height-threshold 120                   ; min width to split window vertically
  reb-re-syntax 'string                        ; use string syntax for regexp builder
- require-final-newline 'visit-save)           ; add a newline automatically
+ require-final-newline 'visit-save)
 
 (put 'set-goal-column 'disabled nil)          ; enable goal column setting
 (put 'narrow-to-region 'disabled nil)         ; enable hiding
@@ -34,7 +40,7 @@
 (global-set-key (kbd "C-c r") 'recompile)     ; recompile
 (global-set-key (kbd "C-c a") 'align-regexp)  ; align
 (global-set-key (kbd "C-c g") 'rgrep)         ; grep
-(global-linum-mode 1)                         ; linum-mode
+(global-linum-mode t)                         ; global linum mode
 
 
 ;;; ediff
@@ -68,15 +74,17 @@
  smex markdown-mode markdown-mode+ hgignore-mode move-text paredit
  rainbow-delimiters rainbow-mode json-mode json-reformat flycheck
  solarized-theme terraform-mode visual-regexp yasnippet yaml-mode
- zencoding-mode))
+ zencoding-mode ediff))
 
 
 ;;; custom requires
-(require 'haskell-intero-init)
+(require 'init-ivy)
+;; (require 'haskell-intero-init)
+(require 'haskell-lsp-init)
 (require 'javascript-init)
 (require 'c-init)
 (require 'ansible-init)
-(require 'rust-init)
+;;(require 'hg-init)
 
 
 ;;; text-mode
@@ -140,6 +148,7 @@
 
 
 ;;; ido / smex / completion
+
 (setq-default
  ido-enable-flex-matching t                           ; fuzzy matching for ido mode
  ido-create-new-buffer 'always                        ; create new buffer without prompt
@@ -149,8 +158,8 @@
 (ido-mode t)                                          ; file/buffer selector
 (flx-ido-mode t)
 (global-set-key (kbd "M-/") 'completion-at-point)
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;; (global-set-key (kbd "M-x") 'smex)
+;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 
 
 ;;; emacs-lisp-mode
@@ -167,9 +176,13 @@
  company-show-numbers t
  company-tooltip-align-annotations t)
 
+;;;
+(add-hook 'find-file-hook 'linum-mode)
+
 
 ;;; flycheck-mode
 (global-flycheck-mode t)
+;; (flycheck-add-next-checker 'intero '(warning . haskell-hlint))
 
 
 ;;; uniquify
@@ -184,7 +197,7 @@
  custom-safe-themes
  '("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4"
    "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default))
-(when window-system (load-theme 'solarized-light))
+(when window-system (load-theme 'solarized-dark))
 
 
 ;;; show-paren-mode - needs to be loaded after theme
@@ -246,6 +259,40 @@
 (global-set-key (kbd "M-n") 'move-text-down)
 
 
+;;; Compilation
+
+;; (global-set-key (kbd "C-c C-c") 'compile)
+;; (global-set-key (kbd "C-c r") 'recompile)
+(global-set-key (kbd "M-g M-f") 'first-error)
+
+(setq compilation-scroll-output t)
+(add-to-list 'display-buffer-alist
+             '("\\*compilation\\*"
+               display-buffer-at-bottom
+               display-buffer-pop-up-window
+               display-buffer-reuse-window
+               (window-height . 18)))
+(defun bury-compile-buffer-if-successful (buffer string)
+  "Bury a compilation buffer if succeeded without warnings "
+  (if (and
+       (string-match "compilation" (buffer-name buffer))
+       (string-match "finished" string)
+       (not
+        (with-current-buffer buffer
+          (goto-char (point-min))
+          (search-forward "warning" nil t))))
+      (run-with-timer 1 nil
+                      (lambda (buf)
+                        (bury-buffer buf)
+                        (delete-window (get-buffer-window buf)))
+                      buffer)))
+(add-hook 'compilation-finish-functions 'bury-compile-buffer-if-successful)
+
+;;; dash integration
+(autoload 'dash-at-point "dash-at-point" "Search the word at point with Dash." t nil)
+(global-set-key (kbd "C-c d") 'dash-at-point)
+(global-set-key (kbd "C-c e") 'dash-at-point-with-docset)
+
 ;;; visual-regexp
 (global-set-key (kbd "C-M-%") 'vr/query-replace)
 (global-set-key (kbd "M-%") 'vr/replace)
@@ -254,12 +301,93 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#657b83"])
+ '(compilation-message-face (quote default))
+ '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-normal-cursor-color "#839496")
+ '(cua-overwrite-cursor-color "#b58900")
+ '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
    (quote
-    ("a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default))))
+    ("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
+ '(debug-on-error nil)
+ '(fci-rule-color "#073642")
+ '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
+ '(highlight-symbol-colors
+   (quote
+    ("#3b6b40f432d6" "#07b9463c4d36" "#47a3341e358a" "#1d873c3f56d5" "#2d86441c3361" "#43b7362d3199" "#061d417f59d7")))
+ '(highlight-symbol-foreground-color "#93a1a1")
+ '(highlight-tail-colors
+   (quote
+    (("#073642" . 0)
+     ("#5b7300" . 20)
+     ("#007d76" . 30)
+     ("#0061a8" . 50)
+     ("#866300" . 60)
+     ("#992700" . 70)
+     ("#a00559" . 85)
+     ("#073642" . 100))))
+ '(hl-bg-colors
+   (quote
+    ("#866300" "#992700" "#a7020a" "#a00559" "#243e9b" "#0061a8" "#007d76" "#5b7300")))
+ '(hl-fg-colors
+   (quote
+    ("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36")))
+ '(hl-paren-colors (quote ("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900")))
+ '(lsp-ui-doc-border "#93a1a1")
+ '(nrepl-message-colors
+   (quote
+    ("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4")))
+ '(package-selected-packages
+   (quote
+    (flycheck-haskell imenu-anywhere imenu-list imenus lsp-treemacs lsp-ivy ivy-xref flx counsel-tramp counsel-projectile counsel ivy diminish use-package lsp-mode lsp-ui lsp-haskell company-lsp monky dash-at-point ## ag ansible-doc company-ansible jinja2-mode ac-js2 auto-complete haskell-snippets haskell-mode zencoding-mode yaml-mode yasnippet visual-regexp terraform-mode solarized-theme flycheck json-mode rainbow-mode rainbow-delimiters paredit move-text hgignore-mode markdown-mode+ markdown-mode smex flx-ido expand-region exec-path-from-shell company)))
+ '(pos-tip-background-color "#073642")
+ '(pos-tip-foreground-color "#93a1a1")
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
+ '(term-default-bg-color "#002b36")
+ '(term-default-fg-color "#839496")
+ '(vc-annotate-background nil)
+ '(vc-annotate-background-mode nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#dc322f")
+     (40 . "#cb4366eb20b4")
+     (60 . "#c1167942154f")
+     (80 . "#b58900")
+     (100 . "#a6ae8f7c0000")
+     (120 . "#9ed892380000")
+     (140 . "#96be94cf0000")
+     (160 . "#8e5397440000")
+     (180 . "#859900")
+     (200 . "#77679bfc4635")
+     (220 . "#6d449d465bfd")
+     (240 . "#5fc09ea47092")
+     (260 . "#4c68a01784aa")
+     (280 . "#2aa198")
+     (300 . "#303498e7affc")
+     (320 . "#2fa1947cbb9b")
+     (340 . "#2c879008c736")
+     (360 . "#268bd2"))))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list
+   (quote
+    (unspecified "#002b36" "#073642" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#839496" "#657b83")))
+ '(xterm-color-names
+   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#eee8d5"])
+ '(xterm-color-names-bright
+   ["#002b36" "#cb4b16" "#586e75" "#657b83" "#839496" "#6c71c4" "#93a1a1" "#fdf6e3"]))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(require 'org-table)
+(defun md-table-align ()
+  (interactive)
+  (org-table-align)
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward "-+-" nil t) (replace-match "-|-"))))
