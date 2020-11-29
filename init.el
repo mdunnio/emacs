@@ -7,7 +7,7 @@
 
 ;; melpa
 (require 'package)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 ;; use-package
@@ -27,7 +27,10 @@
 (use-package flycheck
   :ensure t
   :config (global-flycheck-mode))
-(use-package ripgrep :ensure t) ;; ag is inadequate
+(use-package ripgrep :ensure t)   ;; ag is inadequate
+(use-package exec-path-from-shell ;; environment variables are the same between emacs and shell
+  :ensure t
+  :config (exec-path-from-shell-initialize))
 
 ;; customization
 (load-theme `solarized-dark t)  ;; turn on solarized-dark by default
@@ -39,8 +42,8 @@
 (setq inhibit-startup-screen t) ;; remove startup screen
 
 ;; custom elisp files
-(add-to-list `load-path "~/.emacs.d/elsip/")
-(require 'haskell)
+(add-to-list `load-path "~/.emacs.d/elisp/")
+(load "~/.emacs.d/elisp/haskell-init.el")
 
 ;; ---------------- auto-generated ---------------------
 (custom-set-variables
@@ -52,7 +55,7 @@
  '(haskell-tags-on-save t)
  '(package-selected-packages
    (quote
-    (ripgrep flycheck helm company use-package haskell-mode solarized-theme))))
+    (lsp-ui exec-path-from-shell flycheck-haskell ripgrep flycheck helm company use-package haskell-mode solarized-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
