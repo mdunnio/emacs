@@ -61,6 +61,9 @@
 (add-hook 'before-save-hook
           'delete-trailing-whitespace)  ;; deletes trailing whitespace on save
 
+(setq backup-directory-alist
+      `(("." . ,(concat user-emacs-directory "backups")))) ;; put all backups (~ files) into ~/.emacs.d/backups/
+
 ;; custom elisp files
 (load "~/.emacs.d/elisp/haskell-init.el")
 
