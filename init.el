@@ -73,32 +73,5 @@
 ;; custom elisp files
 (load "~/.emacs.d/elisp/haskell-init.el")
 
-;; ---------------- auto-generated ---------------------
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(haskell-stylish-on-save t)
- '(haskell-tags-on-save t)
- '(package-selected-packages
-   (quote
-    (helm-projectile yaml-mode lsp-ui exec-path-from-shell flycheck-haskell ripgrep flycheck helm company use-package haskell-mode solarized-theme)))
- '(safe-local-variable-values
-   (quote
-    ((ormolu-process-path . "fourmolu")
-     (lsp-haskell-formatting-provider . "fourmolu")
-     (haskell-stylish-on-save)
-     (haskell-process-type . stack-ghci)
-     (haskell-indentation-starter-offset . 4)
-     (haskell-indentation-left-offset . 4)
-     (haskell-indentation-layout-offset . 4)))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
 (provide 'init)
 ;;; init.el ends here
