@@ -19,27 +19,22 @@
 (setq use-package-always-ensure t) ;; sets ':ensure t' on all use-package calls
 
 ;; packages
-(use-package solarized-theme :ensure t)
+(use-package solarized-theme)
 (use-package company
-  :ensure t
   :config (global-company-mode))		;; all buffers use company mode
 (use-package helm
-  :ensure t
   :config (helm-mode 1)				;; start helm mode automatically
   :bind
   ("M-x" . helm-M-x)				;; use helm for all M-x commands
   ("C-x C-f" . helm-find-files)                 ;; use helm for finding files
   ("C-x C-l" . helm-locate))                    ;; use helm for file fuzzy match search
 (use-package flycheck
-  :ensure t
   :config (global-flycheck-mode))		;; all buffers use flycheck mode
 (use-package ripgrep
-  :ensure t
   :bind ("C-c r" . ripgrep-regexp))		;; quick, easy to use keybinding for ripgrep
 (use-package exec-path-from-shell		;; environment variables are the same between emacs and your shell
-  :ensure t
   :config (exec-path-from-shell-initialize))	;; sets $MANPATH, $PATH, and exec-path from your shell
-(use-package yaml-mode :ensure t)
+(use-package yaml-mode)
 
 ;; keyboard customizations
 (setq is-mac (equal system-type 'darwin))	;; sets is-mac to true of macos
