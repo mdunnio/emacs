@@ -43,9 +43,16 @@
    mac-command-modifier 'meta			;; changes the meta key from ESC to COMMAND on macos
    ring-bell-function 'ignore                   ;; turn off bell
    )
+  (use-package dash-at-point                    ;; use dash-at-point package when on macos
+    :bind("C-c d" . dash-at-point))             ;; binds C-c d to open dash
   )
 (global-set-key (kbd "C-c a") 'align-regexp)	;; bind align-regexp to C-c a
 (global-set-key (kbd "C-x C-b") 'ibuffer)	;; uses ibuffer
+
+(global-set-key (kbd "C-x <up>") 'windmove-up)		;; allows arrow-key window movement
+(global-set-key (kbd "C-x <down>") 'windmove-down)	;; allows arrow-key window movement
+(global-set-key (kbd "C-x <left>") 'windmove-left)	;; allows arrow-key window movement
+(global-set-key (kbd "C-x <right>") 'windmove-right)	;; allows arrow-key window movement
 
 ;; completely optional customization
 (load-theme `solarized-dark t)			;; turn on solarized-dark by default
