@@ -22,12 +22,11 @@
 (use-package solarized-theme)
 (use-package company
   :config (global-company-mode))		;; all buffers use company mode
-(use-package helm
-  :config (helm-mode 1)				;; start helm mode automatically
-  :bind
-  ("M-x" . helm-M-x)				;; use helm for all M-x commands
-  ("C-x C-f" . helm-find-files)                 ;; use helm for finding files
-  ("C-x C-l" . helm-locate))                    ;; use helm for file fuzzy match search
+(use-package counsel
+  :init
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  :config (ivy-mode 1))
 (use-package flycheck
   :config (global-flycheck-mode))		;; all buffers use flycheck mode
 (use-package ripgrep
@@ -35,6 +34,8 @@
 (use-package exec-path-from-shell		;; environment variables are the same between emacs and your shell
   :config (exec-path-from-shell-initialize))	;; sets $MANPATH, $PATH, and exec-path from your shell
 (use-package yaml-mode)
+(use-package terraform-mode)                    ;; install terraform mode
+(use-package typescript-mode)                   ;; install typescript mode
 
 ;; keyboard customizations
 (setq is-mac (equal system-type 'darwin))	;; sets is-mac to true of macos
@@ -54,6 +55,32 @@
 (global-set-key (kbd "C-x <left>") 'windmove-left)	;; allows arrow-key window movement
 (global-set-key (kbd "C-x <right>") 'windmove-right)	;; allows arrow-key window movement
 
+;; counsel/ivy keybindings
+(global-set-key (kbd "C-s") 'swiper-isearch)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "M-y") 'counsel-yank-pop)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "<f2> j") 'counsel-set-variable)
+(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+(global-set-key (kbd "C-c v") 'ivy-push-view)
+(global-set-key (kbd "C-c V") 'ivy-pop-view)
+(global-set-key (kbd "C-c c") 'counsel-compile)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c L") 'counsel-git-log)
+(global-set-key (kbd "C-c k") 'counsel-rg)
+(global-set-key (kbd "C-c m") 'counsel-linux-app)
+(global-set-key (kbd "C-c n") 'counsel-fzf)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-c J") 'counsel-file-jump)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+(global-set-key (kbd "C-c w") 'counsel-wmctrl)
+
 ;; completely optional customization
 (load-theme `solarized-dark t)			;; turn on solarized-dark by default
 (set-default `truncate-lines t)			;; disable line-wrap
@@ -65,6 +92,13 @@
 (global-display-line-numbers-mode)		;; display line numbers on left side
 (show-paren-mode 1)				;; highlight matching pairs of parens
 (electric-pair-mode)				;; enables auto-pair characters (example, creates groups of brackets automatically)
+(setq create-lockfiles nil)                     ;; disables lockfile (*#*) creation
+(setq make-backup-files nil)                    ;; disables backup file creation
+(fset 'yes-or-no-p 'y-or-n-p)                   ;; replace yes/no prompts with y/n
+(add-to-list 'safe-local-variable-values
+             '(haskell-hoogle-command "stack hoogle --"))
+;; (add-to-list 'safe-local-variable-values
+;; 	     '(haskell-hoogle-server-command . "(lambda (port) (list \"stack\" \"hoogle\" \"--\" \"server\" \"--local\" \"-p\" (number-to-string port))))"))
 
 (add-hook 'before-save-hook
           'delete-trailing-whitespace)  ;; deletes trailing whitespace on save
@@ -77,3 +111,30 @@
 
 (provide 'init)
 ;;; init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" default))
+ '(package-selected-packages
+   '(typescript-mode counsel ivy terraform-mode dash-at-point ormolu lsp-ui lsp-haskell lsp-mode flycheck-haskell yaml-mode exec-path-from-shell ripgrep flycheck helm company solarized-theme use-package))
+ '(safe-local-variable-values
+   '((haskell-hoogle-url . "http://localhost:8123/?hoogle=%s")
+     (ormolu-process-path . "fourmolu")
+     (lsp-haskell-formatting-provider . "fourmolu")
+     (haskell-stylish-on-save)
+     (haskell-process-type . stack-ghci)
+     (haskell-indentation-starter-offset . 4)
+     (haskell-indentation-left-offset . 4)
+     (haskell-indentation-layout-offset . 4)
+     (web-mode-code-indent-offset . 2)
+     (web-mode-css-indent-offset . 2)
+     (web-mode-markup-indent-offset . 2))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
